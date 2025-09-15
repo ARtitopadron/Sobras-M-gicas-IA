@@ -1,0 +1,8 @@
+{
+  "name": "Sobras Mágicas IA",
+  "description": "Transforma las sobras de tu nevera en recetas deliciosas y creativas con la ayuda de la inteligencia artificial. Sube una foto de tus ingredientes, aplica filtros y obtén recetas personalizadas en segundos.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "prompt": ""
+}
