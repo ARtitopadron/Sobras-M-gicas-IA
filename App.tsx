@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { AppStep, Recipe, Filters } from './types';
 import { DIETARY_RESTRICTIONS, MEAL_TYPES, COOKING_TIMES } from './constants';
 import { identifyIngredientsFromImage, generateRecipesFromIngredients } from './services/geminiService';
-import { UploadIcon, ChefHatIcon, BackIcon, TrashIcon, PlusIcon, CameraIcon, BookmarkIcon, ShareIcon } from './components/icons';
+import { UploadIcon, BackIcon, TrashIcon, PlusIcon, CameraIcon, BookmarkIcon } from './components/icons';
 import RecipeCard from './components/RecipeCard';
 import CameraView from './components/CameraView';
 import InstallBanner from './components/InstallBanner';
@@ -203,34 +204,6 @@ const App: React.FC = () => {
         setIngredients(ingredients.filter(ing => ing !== ingredientToRemove));
     };
 
-    const handleShareIngredients = async () => {
-        if (ingredients.length === 0) return;
-
-        const shareText = `¡Mira los ingredientes que voy a usar con Sobras Mágicas IA!\n\n- ${ingredients.join('\n- ')}\n\n¿Qué cocinarías tú?`;
-
-        const shareData = {
-            title: 'Mis Ingredientes para Sobras Mágicas IA',
-            text: shareText,
-            url: window.location.href,
-        };
-
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (error) {
-                console.log('Web Share API cancelado por el usuario.');
-            }
-        } else {
-            try {
-                await navigator.clipboard.writeText(shareText);
-                alert('¡Lista de ingredientes copiada al portapapeles!');
-            } catch (err) {
-                console.error('Fallo al copiar texto: ', err);
-                alert('Error: No se pudo copiar la lista de ingredientes.');
-            }
-        }
-    };
-
     const resetApp = () => {
         setStep(AppStep.Welcome);
         setImageFile(null);
@@ -269,24 +242,18 @@ const App: React.FC = () => {
 
     const renderHeader = () => (
       <header className="py-6 px-4 sm:px-6 lg:px-8 bg-white shadow-md w-full sticky top-0 z-10">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={resetApp} role="button" aria-label="Ir a la página de inicio">
-                  <ChefHatIcon className="w-10 h-10 text-indigo-600 icon-shadow" />
+          <div className="flex items-center justify-center gap-4 max-w-7xl mx-auto">
+              <div className="flex items-center cursor-pointer" onClick={resetApp} role="button" aria-label="Ir a la página de inicio">
                   <h1 className="text-3xl font-bold text-gray-800 font-display">Sobras Mágicas IA</h1>
               </div>
-               <div className="flex items-center gap-2 sm:gap-4">
-                  {(step === AppStep.ConfirmIngredients || step === AppStep.Results || step === AppStep.Favorites) && (
-                     <button onClick={resetApp} className="hidden sm:block text-indigo-600 active:text-indigo-800 transition-colors text-sm font-semibold">Empezar de nuevo</button>
-                  )}
-                  <button onClick={goToFavorites} className="relative p-2 text-indigo-600 active:text-indigo-800 transition-colors" title="Ver favoritos" aria-label="Ver recetas favoritas">
-                        <BookmarkIcon className="w-7 h-7 icon-shadow"/>
-                        {favorites.length > 0 && (
-                            <span className="absolute top-0 right-0 block h-5 w-5 text-center leading-5 rounded-full bg-red-500 text-white text-xs font-bold ring-2 ring-white">
-                                {favorites.length}
-                            </span>
-                        )}
-                  </button>
-              </div>
+              <button onClick={goToFavorites} className="relative p-2 text-indigo-600 active:text-indigo-800 transition-colors" title="Ver favoritos" aria-label="Ver recetas favoritas">
+                    <BookmarkIcon className="w-7 h-7 icon-shadow"/>
+                    {favorites.length > 0 && (
+                        <span className="absolute top-0 right-0 block h-5 w-5 text-center leading-5 rounded-full bg-red-500 text-white text-xs font-bold ring-2 ring-white">
+                            {favorites.length}
+                        </span>
+                    )}
+              </button>
           </div>
       </header>
     );
@@ -320,19 +287,7 @@ const App: React.FC = () => {
                     <img src={imageUrl} alt="Ingredientes" className="rounded-2xl shadow-lg w-full object-cover aspect-square"/>
                 </div>
                 <div className="bg-white p-6 rounded-2xl shadow-lg">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-2xl font-bold font-display text-gray-800">Ingredientes Identificados</h3>
-                        <button 
-                            onClick={handleShareIngredients}
-                            title="Compartir ingredientes"
-                            aria-label="Compartir lista de ingredientes"
-                            disabled={ingredients.length === 0}
-                            className="flex items-center gap-2 text-indigo-600 active:text-indigo-800 font-semibold transition-colors bg-indigo-50 p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <ShareIcon className="w-5 h-5 icon-shadow" />
-                            <span className="hidden sm:inline">Compartir</span>
-                        </button>
-                    </div>
+                    <h3 className="text-2xl font-bold font-display text-gray-800 mb-4">Ingredientes Identificados</h3>
                     <p className="text-sm text-gray-600 mb-4">Hemos encontrado esto. ¡Añade o quita ingredientes para que la receta sea perfecta!</p>
                      <div className="bg-gray-50 p-4 rounded-xl shadow-sm mb-4">
                         <div className="flex flex-wrap gap-2">
